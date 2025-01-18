@@ -2,13 +2,7 @@ import discord
 from discord import app_commands
 from openai import OpenAI
 import os
-
-# Load your API keys from environment variables or a configuration file
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-# Initialize the OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+from config import DISCORD_TOKEN, OPENAI_API_KEY
 
 class JokeBot(discord.Client):
     def __init__(self):
@@ -19,7 +13,12 @@ class JokeBot(discord.Client):
         self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
     async def setup_hook(self):
-        await self.tree.sync()
+        # This is called when the bot starts
+        try:
+            await self.tree.sync()
+            print("Successfully synced commands")
+        except Exception as e:
+            print(f"Failed to sync commands: {e}")
 
 client = JokeBot()
 
@@ -28,7 +27,7 @@ async def steve_joke(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         response = client.openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4",  # Make sure this matches your OpenAI subscription
             messages=[
                 {"role": "system", "content": (
                     "You are an AI assistant that provides humorous one-liner jokes about Steve Pruitt, highlighting "
@@ -51,16 +50,15 @@ async def steve_joke(interaction: discord.Interaction):
 async def steve_compliment(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
-        # Use client.openai_client instead of client
         response = client.openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4",  # Make sure this matches your OpenAI subscription
             messages=[
                 {"role": "system", "content": (
                     "You are an AI assistant that provides humorous one-liner compliments about Steve Pruitt, highlighting "
                     "his over-the-top abilities."
                 )},
                 {"role": "user", "content": (
-                    "Generate a short, funny Chuck Norris jokes and replace Chuck Norris with Steve Pruitt. The joke should be one or two sentences long."
+                    "Generate a short, funny Chuck Norris style joke and replace Chuck Norris with Steve Pruitt. The joke should be one or two sentences long."
                 )}
             ],
             max_tokens=150,
@@ -75,9 +73,14 @@ async def steve_compliment(interaction: discord.Interaction):
 @client.event
 async def on_ready():
     print(f'Bot is ready! Logged in as {client.user}')
-
-def run_bot():
-    client.run(DISCORD_TOKEN)
+    print(f'Bot ID: {client.user.id}')
+    print('------')
 
 if __name__ == "__main__":
-    run_bot()
+    # Get port from environment variable for Heroku
+    port = int(os.environ.get('PORT', 8080))
+    
+    try:
+        client.run(DISCORD_TOKEN)
+    except Exception as e:
+        print(f"Failed to start bot: {e}")
