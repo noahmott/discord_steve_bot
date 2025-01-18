@@ -27,11 +27,10 @@ async def steve_joke(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         response = client.openai_client.chat.completions.create(
-            model="gpt-4",  # Make sure this matches your OpenAI subscription
+            model="gpt-4o",  # Make sure this matches your OpenAI subscription
             messages=[
                 {"role": "system", "content": (
-                    "You are an AI assistant that provides humorous one-liner jokes about Steve Pruitt, highlighting "
-                    "his bad luck and lack of skills."
+                    "You are an AI assistant that provides humorous one-liner jokes about Steve Pruitt, highlighting his bad luck and lack of skills."
                 )},
                 {"role": "user", "content": (
                     "Generate a short, funny jokes that are the opposite of Chuck Norris jokes and replace Chuck Norris with Steve Pruitt. The joke should be one or two sentences long."
@@ -51,7 +50,7 @@ async def steve_compliment(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         response = client.openai_client.chat.completions.create(
-            model="gpt-4",  # Make sure this matches your OpenAI subscription
+            model="gpt-4o",  # Make sure this matches your OpenAI subscription
             messages=[
                 {"role": "system", "content": (
                     "You are an AI assistant that provides humorous one-liner compliments about Steve Pruitt, highlighting "
